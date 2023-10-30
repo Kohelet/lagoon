@@ -5,8 +5,7 @@ import {
     DevEnvHelper,
     sbtcDepositHelper,
     TESTNET,
-    REGTEST,
-    TestNetHelper,
+    TestnetHelper,
     WALLET_00,
     WALLET_01,
 } from "sbtc";
@@ -25,34 +24,34 @@ export default function DepositForm() {
 
     const buildTransaction = async (e) => {
         e.preventDefault();
-        //const testnet = new TestnetHelper();
-        const testnet = new DevEnvHelper();
+        const testnet = new TestnetHelper();
+        //const testnet = new DevEnvHelper();
 
         // setting BTC address for devnet
-        const bitcoinAccountA = await testnet.getBitcoinAccount(WALLET_00);
-        const btcAddress = bitcoinAccountA.wpkh.address;
-        const btcPublicKey = bitcoinAccountA.publicKey.buffer.toString();
+        // const bitcoinAccountA = await testnet.getBitcoinAccount(WALLET_00);
+        // const btcAddress = bitcoinAccountA.wpkh.address;
+        // const btcPublicKey = bitcoinAccountA.publicKey.buffer.toString();
 
         // setting BTC address for testnet  
-        // const btcAddress = userData.profile.btcAddress.p2wpkh.testnet;
-        // const btcPublicKey = userData.profile.btcPublicKey.p2wpkh;
+        const btcAddress = userData.profile.btcAddress.p2wpkh.testnet;
+        const btcPublicKey = userData.profile.btcPublicKey.p2wpkh;
 
         let utxos = await testnet.fetchUtxos(btcAddress);
 
         // If we are working via testnet
         // get sBTC deposit address from bridge API
-        // const response = await fetch(
-        //   "https://bridge.sbtc.tech/bridge-api/testnet/v1/sbtc/init-ui"
-        // );
-        // const data = await response.json();
-        // const sbtcWalletAddress = data.sbtcContractData.sbtcWalletAddress;
+        const response = await fetch(
+            "https://bridge.sbtc.tech/bridge-api/testnet/v1/sbtc/init-ui"
+        );
+        const data = await response.json();
+        const sbtcWalletAddress = data.sbtcContractData.sbtcWalletAddress;
 
         // if we are working via devnet
-        const sbtcWalletAccount = await testnet.getBitcoinAccount(WALLET_00);
-        const sbtcWalletAddress = sbtcWalletAccount.tr.address;
+        // const sbtcWalletAccount = await testnet.getBitcoinAccount(WALLET_00);
+        // const sbtcWalletAddress = sbtcWalletAccount.tr.address;
         const tx = await sbtcDepositHelper({
             // comment this line out if working via devnet
-            //network: TESTNET,
+            network: TESTNET,
             sbtcWalletAddress,
             stacksAddress: userData.profile.stxAddress.testnet,
             amountSats: satoshis,
